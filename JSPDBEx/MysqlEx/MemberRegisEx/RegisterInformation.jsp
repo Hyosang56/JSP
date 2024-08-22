@@ -1,7 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page contentType= "text/html;charset=UTF-8"%>
-<%@ page import = "java.sql.*" %>
+<%@ page  import="java.util.ArrayList" %>   
+<%@ page import = "com.webdb.TblRegister" %>
+  
+<jsp:useBean  id="regBean" 
+   class="com.webdb.TblRegister" 
+   scope="request"/>  
+    
+<% ArrayList<TblRegister> obmem = 
+            regBean.readDB(); %>
+
 
 <!DOCTYPE html>
 <html>
@@ -9,65 +17,49 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
-<body>
-	<h2>회원 정보</h2>
-    <%
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-
-        try {
-            // JDBC 드라이버 로드
-            Class.forName("com.mysql.cj.jdbc.Driver");
-
-            // 데이터베이스 연결
-            String jdbcUrl = "jdbc:mysql://localhost:3306/yourDatabaseName?useSSL=false&serverTimezone=UTC";
-            String dbUser = "yourUsername";
-            String dbPass = "yourPassword";
-            conn = DriverManager.getConnection(jdbcUrl, dbUser, dbPass);
-
-            // SQL 쿼리 작성 및 실행
-            String sql = "SELECT * FROM tblRegister";
-            pstmt = conn.prepareStatement(sql);
-            rs = pstmt.executeQuery();
-
-            // 결과 처리
-            List<RegisterBean> registerList = new ArrayList<>();
-            while (rs.next()) {
-                RegisterBean register = new RegisterBean();
-                register.setId(rs.getString("id"));
-                register.setPasswd(rs.getString("passwd"));
-                register.setName(rs.getString("name"));
-                register.setNum1(rs.getString("num1"));
-                register.setNum2(rs.getString("num2"));
-                register.setEmail(rs.getString("email"));
-                register.setPhone(rs.getString("phone"));
-                register.setZipcode(rs.getString("zipcode"));
-                register.setAddress(rs.getString("address"));
-                register.setJob(rs.getString("job"));
-
-                registerList.add(register);
-            }
-
-            // 출력
-            for (RegisterBean reg : registerList) {
-                %>
-                <p>ID: <%= reg.getId() %></p>
-                <p>이름: <%= reg.getName() %></p>
-                <p>이메일: <%= reg.getEmail() %></p>
-                <p>전화번호: <%= reg.getPhone() %></p>
-                <p>주소: <%= reg.getAddress() %></p>
-                <p>직업: <%= reg.getJob() %></p>
-                <hr>
-                <%
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (rs != null) try { rs.close(); } catch (SQLException ignore) {}
-            if (pstmt != null) try { pstmt.close(); } catch (SQLException ignore) {}
-            if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
-        }
-    %>
+<body bgcolor="#FFFFCC">
+   <H1>Bean를 사용한 데이터베이스 연동 예제</H1>
+   <h2>회원 정보</h2>
+      
+   <table bordercolor="#0000ff" border="1">
+      <tr>
+         <td><strong>ID</strong></td>
+         <td><strong>PASSWD</strong></td>
+         <td><strong>NAME</strong></td>
+         <td><strong>NUM1</strong></td>
+         <td><strong>NUM2</strong></td>
+         <td><strong>EMAIL</strong></td>
+         <td><strong>PHONE</strong></td>
+         <td><strong>ZIPCODE/ADDRESS</strong></td>
+         <td><strong>JOB</strong></td>   
+      </tr>
+      <%
+         //for(int i=0; i < 2; ++i)
+         //for(int i=0; i < obmem.size() ; ++i)
+         for(int i=0; i < TblRegister.getCounter() ; ++i)
+         { 
+            regBean = obmem.get(i);         
+      %>      
+         <tr>
+            <td><%=regBean.getId() %> </td>
+            <td><%=regBean.getPwd() %></td>
+            <td><%=regBean.getName() %></td>
+            <td><%=regBean.getNum1() %></td>
+            <td><%=regBean.getNum2() %></td>
+            <td><%=regBean.getEmail() %></td>
+            <td><%=regBean.getPhone() %></td>
+            <td><%=regBean.getZipcode() %>
+             / <%=regBean.getAddress() %></td>
+            <td><%=regBean.getJob() %></td>
+         </tr>
+      <%}
+         
+      %>
+   </table>
+   
+   <h1> Total records : <%=obmem.size() %> </h1>
+   <h1> 총 레코드 개수 : 
+      <%=TblRegister.getCounter() %></h1>
+      <% TblRegister.setCounter(0); %>
 </body>
 </html>
