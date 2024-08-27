@@ -24,7 +24,7 @@
       
       stmt = conn.createStatement();
       String command = String.format(
-   "update goodsinfo set"+"title='%s',writer='%s'"+
+   "update goodsinfo set "+"title='%s',writer='%s' ,"+
       "price = '%s' where code = '%s';",
       title, writer, price,code);
       
